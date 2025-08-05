@@ -1,0 +1,18 @@
+services:
+  web:
+    build: ./web
+    ports:
+      - "8000:8000"
+    
+    develop:
+      # create a `watch` configuration to update the app
+      watch:
+      - action: sync
+        path: .
+        target: /app
+        ignore:
+          - .venv/
+
+      - action: rebuild
+        path: ./uv.lock
+    
