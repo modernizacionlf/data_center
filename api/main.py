@@ -1,17 +1,18 @@
 from fastapi import FastAPI
 
+from src.endpoints import ENDPOINTS
 
-app = FastAPI()
 
+app = FastAPI(title="Centro de Datos - Las Flores")
 
-@app.get("/")
+@app.get(ENDPOINTS.BASE)
 async def root():
     return "Hello world"
 
-@app.get("/entidades")
+@app.get(ENDPOINTS.ENTITIES)
 async def get_entities():
     return "Entidades disponibles"
 
-@app.get("/entidades/{entity_name}")
+@app.get(ENDPOINTS.ENTITY("{entity_name}"))
 async def get_entity(entity_name: str):
     return {"Entity": entity_name}
