@@ -6,3 +6,4 @@
 !api/
 !api/**
 api/**/.venv/
+api/**/.env*
