@@ -3,6 +3,6 @@
 !.gitignore
 !docker-compose.yml
 
-!web/
-!web/**
-web/**/.venv/
+!api/
+!api/**
+api/**/.venv/

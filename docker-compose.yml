@@ -1,6 +1,6 @@
 services:
-  web:
-    build: ./web
+  api:
+    build: ./api
     ports:
       - "8000:8000"
     
