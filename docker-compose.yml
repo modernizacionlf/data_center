@@ -1,8 +1,11 @@
 services:
   api:
     build: ./api
+    container_name: data-center-api
     ports:
       - "8000:8000"
+    depends_on:
+      - database
     
     develop:
       # create a `watch` configuration to update the app
@@ -15,4 +18,25 @@ services:
 
       - action: rebuild
         path: ./uv.lock
+
+  database:
+    image: postgres:latest
+    container_name: data-center-database
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+      - ./sql:/docker-entrypoint-initdb.d:ro
+    env_file:
+      - .env
+    networks:
+      - network
+    
+volumes:
+  postgres_db:
+    driver: local
+
+networks:
+  network:
+    driver: bridge
     
