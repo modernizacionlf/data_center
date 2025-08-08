@@ -1,8 +1,9 @@
 from datetime import datetime
-
-from sqlalchemy import create_engine
+from typing import Mapping, Optional, Union
 
 import pandas as pd
+
+from sqlalchemy import create_engine
 
 
 
@@ -13,8 +14,8 @@ class BaseExtractor():
         self.source_name = source_config.get("name", "unknown_name")
         self.batch_id = f"{self.source_name}_{datetime.now().strftime("%Y%m%d_%H%M%S")}"
 
-    def extract(self, query: str):
-        pass
+    def extract(self, *args, **kwargs) -> pd.DataFrame: # type: ignore
+        raise NotImplementedError("Subclasses must implement extract method")
 
     def _add_metadata(self, data: pd.DataFrame):
         data["_source"] = self.source_name
@@ -24,13 +25,14 @@ class BaseExtractor():
 
 class DatabaseExtractor(BaseExtractor):
     def __init__(self, source_config: dict[str, str]) -> None:
-        self.connection_string = self.config.get("connection_string", "failed_connection_string")
         super().__init__(source_config)
+        self.connection_string = self.config.get("connection_string", "failed_connection_string")
 
-    def extract(self, query: str):
+    type ExtractParams = Mapping[str, Union[str, int, float, bool]]
+    def extract(self, query: str, params: Optional[ExtractParams]) -> pd.DataFrame:
         engine = create_engine(self.connection_string)
-        data: pd.DataFrame = pd.read_sql(query, engine) # type: ignore
-        return self._add_metadata(data)
+        data: pd.DataFrame = pd.read_sql(query, engine, params) # type: ignore
+        return data
 
 
 class APIExtractor(BaseExtractor):
