@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Mapping, Optional, Union
+from typing import Any, Mapping, Optional
 
 import pandas as pd
 
@@ -24,7 +24,7 @@ class BaseExtractor():
 
 
 class DatabaseExtractor(BaseExtractor):
-    type ExtractParams = Mapping[str, Union[str, int, float, bool]]
+    type ExtractParams = Mapping[str, Any]
     def __init__(self, source_config: dict[str, str]) -> None:
         super().__init__(source_config)
         self.connection_string = self.config.get("connection_string", "failed_connection_string")
