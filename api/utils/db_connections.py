@@ -5,19 +5,28 @@ from pathlib import Path
 from dotenv import load_dotenv
 
 
+type SourceConfig = dict[str, str]
+
+
 class DBConnection:
     def __init__(self, env_path: Path, user_key: str, password_key: str, host_key: str, port_key: str, db_key: str) -> None:
         load_dotenv(env_path)
-        self.user = os.getenv(user_key)
-        self.password = os.getenv(password_key)
-        self.host = os.getenv(host_key)
-        self.port = os.getenv(port_key)
-        self.db = os.getenv(db_key)
+        self.user = os.getenv(user_key, "")
+        self.password = os.getenv(password_key, "")
+        self.host = os.getenv(host_key, "")
+        self.port = os.getenv(port_key, "")
+        self.db = os.getenv(db_key, "")
 
     @property
     def connection_string(self) -> str:
         return f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}"
     
+    @property
+    def source_config(self) -> SourceConfig:
+        return {
+            "name": self.db,
+            "connection_string": self.connection_string
+        }
 
 class Geonode(DBConnection):
     def __init__(
@@ -28,9 +37,14 @@ class Geonode(DBConnection):
         host_key: str = "DB_HOST", 
         port_key: str = "DB_PORT", 
         db_key: str = "DB_NAME"
-    ) -> None:
+    ) -> None:        
         super().__init__(env_path, user_key, password_key, host_key, port_key, db_key)
 
+    @property
+    def queries(self) -> list[dict[str, str]]:
+        return [
+            {"query": "SELECT estado_id, nivel_id, pintura FROM global.rampas"}
+        ]
 
 class DataCenter(DBConnection):
     def __init__(self, 
