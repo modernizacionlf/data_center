@@ -1,24 +1,17 @@
-import os
-
-from dotenv import load_dotenv
 from unittest import TestCase
 
+from utils.db_connections import Geonode
+from utils.paths import GEONODE_ENV_PATH
 from src.extractor import DatabaseExtractor
-from src.paths import GEONODE_ENV_PATH
 
 
 class TestDatabaseExtractor(TestCase):
     def setUp(self) -> None:
-        load_dotenv(GEONODE_ENV_PATH)
-        DB_USER = os.getenv("DB_USER")
-        DB_PASSWORD = os.getenv("DB_PASSWORD")
-        DB_HOST = os.getenv("DB_HOST")
-        DB_PORT = os.getenv("DB_PORT")
-        DB_NAME = os.getenv("DB_NAME")
+        geonode = Geonode(GEONODE_ENV_PATH)
 
         source_config = {
             "name": "geonode",
-            "connection_string": f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+            "connection_string": geonode.connection_string
         }
         self.database_extractor = DatabaseExtractor(source_config)
 
