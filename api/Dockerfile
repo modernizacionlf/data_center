@@ -47,8 +47,8 @@ RUN chmod +x /entrypoint.sh
 
 # Create log directory and set permissions
 RUN mkdir -p /var/log && \
-    touch /var/log/cronjob.log && \
-    chmod 666 /var/log/cronjob.log
+    touch /var/log/datacenter-job.log && \
+    chmod 666 /var/log/datacenter-job.log
 
 # Use entrypoint to start both cron and FastAPI
 CMD ["/entrypoint.sh"]
