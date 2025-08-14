@@ -3,17 +3,59 @@ from typing import Any, Dict, Optional
 import pandas as pd
 
 from src.extractor import BaseExtractor
-from src.staging import StagingLoader
+from src.loader import BaseLoader
 from src.transform import DataTransformer
 from src.monitoring import PipelineMonitor
-from src.warehouse import WarehouseLoader
+
+
+class LoadingStep:
+    def __init__(self, loader: BaseLoader, schema: str) -> None:
+        self.loader = loader
+        self.schema = schema
+
+    def execute(self, data: pd.DataFrame, table_name: str) -> int:
+        return self.loader.load_data(data, table_name, self.schema)
+
+
+class TransformationStep:
+    def __init__(self, transformer: DataTransformer) -> None:
+        self.transformer = transformer
+
+    def execute(self, data: pd.DataFrame) -> pd.DataFrame:
+        return self.transformer.transform_batch(data)
+    
+
+class PipelineContext:
+    def __init__(self, source_name: str, batch_id: str) -> None:
+        self.source_name = source_name
+        self.batch_id = batch_id
+        self.metadata: Dict[str, Any] = {}
+
+
+class ExtractionStep:
+    def __init__(self, extractor: BaseExtractor) -> None:
+        self.extractor = extractor
+
+    def execute(self, extract_kwargs: Dict[str, Any]) -> tuple[pd.DataFrame, PipelineContext]:
+        data = self.extractor.extract(**extract_kwargs) # type: ignore
+        context = PipelineContext(
+            source_name=self.extractor.source_name,
+            batch_id=self.extractor.batch_id
+        )
+        return data, context
 
 
 class DataPipeline:
-    def __init__(self, target_connection_string: str, monitor: Optional[PipelineMonitor] = None) -> None:
-        self.staging = StagingLoader(target_connection_string)
-        self.warehouse = WarehouseLoader(target_connection_string)
-        self.transformer = DataTransformer()
+    def __init__(
+        self,
+        staging_loader: BaseLoader,
+        warehouse_loader: BaseLoader,
+        transformer: DataTransformer,
+        monitor: Optional[PipelineMonitor] = None
+    ):
+        self.staging_step = LoadingStep(staging_loader, "staging")
+        self.warehouse_step = LoadingStep(warehouse_loader, "warehouse")
+        self.transform_step = TransformationStep(transformer)
         self.monitor = monitor or PipelineMonitor()
 
     def run(
@@ -21,25 +63,26 @@ class DataPipeline:
         extractor: BaseExtractor,
         extract_kwargs: Dict[str, Any],
         staging_table: Optional[str] = None,
-        staging_schema: str = "staging",
         final_table: Optional[str] = None,
-        final_schema: str = "warehouse",
     ) -> dict[str, Any]:
-        raw: pd.DataFrame = extractor.extract(**extract_kwargs) # type: ignore
-        self.monitor.log_extraction(extractor.source_name, extractor.batch_id, len(raw))
+        extraction_step = ExtractionStep(extractor)
+        raw_data, context = extraction_step.execute(extract_kwargs)
+        
+        self.monitor.log_extraction(context.source_name, context.batch_id, len(raw_data))
 
-        stage_table = staging_table or f"{extractor.source_name}_raw"
-        loaded_raw = self.staging.load_data(raw, table_name=stage_table, schema=staging_schema)
+        staging_table = staging_table or f"{extractor.source_name}_raw"
+        loaded_raw = self.staging_step.execute(raw_data, staging_table)
 
-        curated = self.transformer.transform_batch(raw)
-        self.monitor.log_transformations(extractor.source_name, extractor.batch_id, len(raw), len(curated))
+        curated_data = self.transform_step.execute(raw_data)
+        self.monitor.log_transformations(context.source_name, context.batch_id, len(raw_data), len(curated_data))
 
         warehouse_table = final_table or f"{extractor.source_name}"
-        loaded_curated = self.warehouse.load_data(curated, table_name=warehouse_table, schema=final_schema)
+        loaded_curated = self.warehouse_step.execute(curated_data, warehouse_table)
 
         return {
-            "source": extractor.source_name,
-            "batch_id": extractor.batch_id,
+            "source": context.source_name,
+            "batch_id": context.batch_id,
             "loaded_raw": loaded_raw,
             "loaded_curated": loaded_curated
         }
+
