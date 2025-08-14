@@ -24,6 +24,9 @@ FROM python:3.12-slim-bookworm
 # copy the app from the builder
 COPY --from=builder --chown=app:app /app /app
 
+# set PYTHONPATH to the root of the project (/app)
+ENV PYTHONPATH=/app:$PYTHONPATH
+
 # place executables in the envionment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
 
