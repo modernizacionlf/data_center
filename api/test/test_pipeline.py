@@ -1,9 +1,12 @@
 from unittest import TestCase
 
-from utils.db_connections import DataCenter, Geonode
-from utils.paths import DATA_CENTER_ENVIRONMENT_PATH, GEONODE_ENV_PATH
 from src.extractor import DatabaseExtractor
 from src.pipeline import DataPipeline
+from src.staging import StagingLoader
+from src.transform import DataTransformer
+from src.warehouse import WarehouseLoader
+from utils.db_connections import DataCenter, Geonode
+from utils.paths import DATA_CENTER_ENVIRONMENT_PATH, GEONODE_ENV_PATH
 
 
 class TestDataPipeline(TestCase):
@@ -16,19 +19,21 @@ class TestDataPipeline(TestCase):
     def test_data_pipeline(self):
         geonode = Geonode(GEONODE_ENV_PATH)
         datacenter = DataCenter(DATA_CENTER_ENVIRONMENT_PATH)
+        
+        staging_loader = StagingLoader(datacenter.connection_string)
+        warehouse_loader = WarehouseLoader(datacenter.connection_string)
+        transformer = DataTransformer()
 
-        source_config = {
-            "name": "geonode",
-            "connection_string": geonode.connection_string
-        }
-        extractor = DatabaseExtractor(source_config)
+        pipeline = DataPipeline(
+            staging_loader,
+            warehouse_loader,
+            transformer
+        )
 
-        pipeline = DataPipeline(target_connection_string=datacenter.connection_string)
+        extractor = DatabaseExtractor(geonode.source_config)
         result = pipeline.run(
             extractor,
             extract_kwargs={"query": "SELECT * FROM global.rampas LIMIT 5"},
-            staging_schema="staging",
-            final_schema="warehouse"
         )
         loaded_raw = result["loaded_raw"]
         self.assertEqual(loaded_raw, 5)
