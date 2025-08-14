@@ -21,8 +21,19 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # use final image without uv
 FROM python:3.12-slim-bookworm
 
+# Install cron
+RUN apt-get update && \
+    apt-get install -y cron && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
 # copy the api from the builder
 COPY --from=builder --chown=api:api /api /api
+
+# Copy cron configuration
+COPY datacenter-job /etc/cron.d/datacenter-job
+RUN chmod 0644 /etc/cron.d/datacenter-job && \
+    crontab /etc/cron.d/datacenter-job
 
 # set PYTHONPATH to the root of the project (/api)
 ENV PYTHONPATH=/api:$PYTHONPATH
@@ -30,7 +41,14 @@ ENV PYTHONPATH=/api:$PYTHONPATH
 # place executables in the envionment at the front of the path
 ENV PATH="/api/.venv/bin:$PATH"
 
-# run FastAPI
-# uses `fastapi dev` to enable hot-reloading when the `watch` sync occurs
-# uses `--host 0.0.0.0` to allow access from outside
-CMD ["fastapi", "dev", "--host", "0.0.0.0", "--port", "8002", "/api/main.py"]
+# Copy entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Create log directory and set permissions
+RUN mkdir -p /var/log && \
+    touch /var/log/cronjob.log && \
+    chmod 666 /var/log/cronjob.log
+
+# Use entrypoint to start both cron and FastAPI
+CMD ["/entrypoint.sh"]

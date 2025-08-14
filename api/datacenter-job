@@ -1,4 +1,4 @@
-# Edit this file to introduce tasks to be run by cron.
+# Data Center - Cron Jobs
 # 
 # Each task to run has to be defined through a single line
 # indicating with different fields when the task will be run
@@ -21,4 +21,4 @@
 # For more information see the manual pages of crontab(5) and cron(8)
 # 
 # m h  dom mon dow   command
-0 6 * * * /usr/bin/python3 /src/job.py >> /var/log/cronjob/log 2>&1
+0 6 * * * python3 api/src/job.py >> /var/log/datacenter-job.log 2>&1
