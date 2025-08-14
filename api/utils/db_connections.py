@@ -1,8 +1,17 @@
 import os
 
 from pathlib import Path
+from dataclasses import dataclass
+from typing import Any, Mapping, Optional
 
 from dotenv import load_dotenv
+
+
+@dataclass
+class QueryRequest:
+    query: str
+    params: Optional[Mapping[str, Any]] = None
+
 
 type SourceConfig = dict[str, str]
 
@@ -33,7 +42,7 @@ class DBConnection:
         return {"name": self.db, "connection_string": self.connection_string}
 
     @property
-    def queries(self) -> list[dict[str, str]]:
+    def queries(self) -> list[QueryRequest]:
         """Override this method in subclasses to provide specific queries"""
         raise NotImplementedError("Subclasses must implement queries property")
 
@@ -51,8 +60,8 @@ class Geonode(DBConnection):
         super().__init__(env_path, user_key, password_key, host_key, port_key, db_key)
 
     @property
-    def queries(self) -> list[dict[str, str]]:
-        return [{"query": "SELECT estado_id, nivel_id, pintura FROM global.rampas"}]
+    def queries(self) -> list[QueryRequest]:
+        return [QueryRequest(query="SELECT estado_id, nivel_id, pintura FROM global.rampas")]
 
 
 class DataCenter(DBConnection):
