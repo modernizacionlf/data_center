@@ -1,27 +1,17 @@
+from typing import Sequence
+
 from src.extractor import DatabaseExtractor
+from src.monitoring import CronJobMonitor
 from src.pipeline import DataPipeline
-from utils.db_connections import DataCenter, Geonode
+from utils.db_connections import DBConnection, DataCenter, Geonode
 from utils.paths import DATA_CENTER_PRODUCTION_PATH, GEONODE_ENV_PATH
-
-from crontab import CronTab
-
-LOG_PATH = "/var/log/data_center_job.log"
-
-cron = CronTab(user="root")
-job = cron.new(
-    command=f"/usr/bin/python3 /src/job.py >> {LOG_PATH} 2>&1", 
-    comment="Data Center Job"
-)
-job.setall("0 6 * * *")
-cron.write()
 
 datacenter = DataCenter(DATA_CENTER_PRODUCTION_PATH)
 
 
 class DatabaseJob():
-    def __init__(self) -> None:
-        self.geonode = Geonode(GEONODE_ENV_PATH)
-        self.dbconnections = [self.geonode]
+    def __init__(self, dbconnections: Sequence[DBConnection]) -> None:
+        self.dbconnections = dbconnections
 
     def run(self):
         for database in self.dbconnections:
@@ -38,15 +28,12 @@ class DatabaseJob():
 
 
 if __name__ == "__main__":
-    import logging
-    logging.basicConfig(
-        filename=LOG_PATH,
-        level=logging.INFO,
-        format="%(asctime)s %(levelname)s %(message)s"
-    )
-    logging.info("Inicio de ejecucion del job")
+    monitor = CronJobMonitor()
+    monitor.log.info("Inicio de ejecucion del job")
     try:
-        DatabaseJob().run()
-        logging.info("Ejecución finalizada correctamente")
+        geonode = Geonode(GEONODE_ENV_PATH)
+        dbconnections = [geonode]
+        DatabaseJob(dbconnections).run()
+        monitor.log.info("Ejecución finalizada correctamente")
     except Exception as error:
-        logging.error(f"Error en la ejecución: {error}")
+        monitor.log.error(f"Error en la ejecución: {error}")
