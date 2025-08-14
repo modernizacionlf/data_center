@@ -29,10 +29,10 @@ class DatabaseJob():
             )
 
             extractor = DatabaseExtractor(database.source_config)
-            for query in database.queries:
+            for query_request in database.queries:
                 pipeline.run(
                     extractor,
-                    extract_kwargs=query,
+                    query_request,
                 )
 
 

@@ -6,6 +6,7 @@ from src.extractor import BaseExtractor
 from src.loader import BaseLoader
 from src.transform import DataTransformer
 from src.monitoring import PipelineMonitor
+from utils.db_connections import QueryRequest
 
 
 class LoadingStep:
@@ -36,8 +37,8 @@ class ExtractionStep:
     def __init__(self, extractor: BaseExtractor) -> None:
         self.extractor = extractor
 
-    def execute(self, extract_kwargs: Dict[str, Any]) -> tuple[pd.DataFrame, PipelineContext]:
-        data = self.extractor.extract(**extract_kwargs) # type: ignore
+    def execute(self, query_request: QueryRequest) -> tuple[pd.DataFrame, PipelineContext]:
+        data = self.extractor.extract(query_request)
         context = PipelineContext(
             source_name=self.extractor.source_name,
             batch_id=self.extractor.batch_id
@@ -61,12 +62,12 @@ class DataPipeline:
     def run(
         self,
         extractor: BaseExtractor,
-        extract_kwargs: Dict[str, Any],
+        query_request: QueryRequest,
         staging_table: Optional[str] = None,
         final_table: Optional[str] = None,
     ) -> dict[str, Any]:
         extraction_step = ExtractionStep(extractor)
-        raw_data, context = extraction_step.execute(extract_kwargs)
+        raw_data, context = extraction_step.execute(query_request)
         
         self.monitor.log_extraction(context.source_name, context.batch_id, len(raw_data))
 
