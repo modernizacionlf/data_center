@@ -1,12 +1,12 @@
 from unittest import TestCase
 
-from api.src.extractor import DatabaseExtractor
-from api.src.pipeline import DataPipeline
-from api.src.staging import StagingLoader
-from api.src.transform import DataTransformer
-from api.src.warehouse import WarehouseLoader
-from api.utils.db_connections import DataCenter, Geonode, QueryRequest
-from api.utils.paths import DATA_CENTER_PRODUCTION_PATH, GEONODE_ENV_PATH
+from src.extractor import DatabaseExtractor
+from src.pipeline import DataPipeline
+from src.staging import StagingLoader
+from src.transform import DataTransformer
+from src.warehouse import WarehouseLoader
+from utils.db_connections import DataCenter, Geonode, QueryRequest
+from utils.paths import DATA_CENTER_PRODUCTION_PATH, GEONODE_ENV_PATH
 
 
 class TestDataPipeline(TestCase):

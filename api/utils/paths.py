@@ -1,4 +1,4 @@
-from api.utils.rootpath import get_project_root_path
+from utils.rootpath import get_project_root_path
 
 ROOT_PATH = get_project_root_path().parent
 API_ROOT = ROOT_PATH / "api"

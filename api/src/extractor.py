@@ -3,7 +3,7 @@ from datetime import datetime
 import pandas as pd
 
 from sqlalchemy import create_engine
-from api.utils.db_connections import QueryRequest
+from utils.db_connections import QueryRequest
 
 
 

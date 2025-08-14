@@ -2,11 +2,11 @@ from typing import Any, Dict, Optional
 
 import pandas as pd
 
-from api.src.extractor import BaseExtractor
-from api.src.loader import BaseLoader
-from api.src.transform import DataTransformer
-from api.src.monitoring import PipelineMonitor
-from api.utils.db_connections import QueryRequest
+from src.extractor import BaseExtractor
+from src.loader import BaseLoader
+from src.transform import DataTransformer
+from src.monitoring import PipelineMonitor
+from utils.db_connections import QueryRequest
 
 
 class LoadingStep:
