@@ -30,4 +30,4 @@ ENV PATH="/app/.venv/bin:$PATH"
 # run FastAPI
 # uses `fastapi dev` to enable hot-reloading when the `watch` sync occurs
 # uses `--host 0.0.0.0` to allow access from outside
-CMD ["fastapi", "dev", "--host", "0.0.0.0", "/app/main.py"]
+CMD ["fastapi", "dev", "--host", "0.0.0.0", "--port", "8002" "/app/main.py"]
