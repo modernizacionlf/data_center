@@ -5,7 +5,7 @@ from src.pipeline import DataPipeline
 from src.staging import StagingLoader
 from src.transform import DataTransformer
 from src.warehouse import WarehouseLoader
-from utils.db_connections import DataCenter, Geonode
+from utils.db_connections import DataCenter, Geonode, QueryRequest
 from utils.paths import DATA_CENTER_ENVIRONMENT_PATH, GEONODE_ENV_PATH
 
 
@@ -31,9 +31,10 @@ class TestDataPipeline(TestCase):
         )
 
         extractor = DatabaseExtractor(geonode.source_config)
+        query_request = QueryRequest(query="SELECT * FROM global.rampas LIMIT 5")
         result = pipeline.run(
             extractor,
-            extract_kwargs={"query": "SELECT * FROM global.rampas LIMIT 5"},
+            query_request,
         )
         loaded_raw = result["loaded_raw"]
         self.assertEqual(loaded_raw, 5)
