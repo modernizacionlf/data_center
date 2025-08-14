@@ -3,7 +3,6 @@ import logging
 from datetime import datetime
 
 
-
 class BaseMonitor:
     def __init__(self, filename: str) -> None:
         self.log = logging.getLogger(filename)

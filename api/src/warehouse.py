@@ -1,5 +1,6 @@
 from pandas import DataFrame
-from src.loader import BaseLoader
+
+from api.src.loader import BaseLoader
 
 
 class WarehouseLoader(BaseLoader):
