@@ -2,6 +2,8 @@ import logging
 
 from datetime import datetime
 
+from pandas import DataFrame
+
 
 class BaseMonitor:
     def __init__(self, filename: str) -> None:
@@ -9,8 +11,18 @@ class BaseMonitor:
         logging.basicConfig(filename=filename, level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 
+class StagingMonitor(BaseMonitor):
+    def __init__(self, filename: str = "/var/log/staging_monitor.log") -> None:
+        super().__init__(filename)
+
+    def log_new_records(self, dataframe: DataFrame, new_records: DataFrame):
+        self.log.info(f"[records]: {len(dataframe)}")
+        self.log.info(f"[duplicated]: {len(dataframe) - len(new_records)}")
+        self.log.info(f"[new records]: {len(new_records)}")
+
+
 class PipelineMonitor(BaseMonitor):
-    def __init__(self, filename: str = "/var/log/cronjob_monitor.log") -> None:
+    def __init__(self, filename: str = "/var/log/pipeline_monitor.log") -> None:
         super().__init__(filename)
 
     def log_extraction(self, source: str, batch_id: str, rows: int):
