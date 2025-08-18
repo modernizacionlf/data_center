@@ -14,7 +14,7 @@ class BaseExtractor():
         self.source_name = source_config.get("name", "unknown_name")
         self.batch_id = f"{self.source_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 
-    def extract(self, query_request: QueryRequest) -> pd.DataFrame:
+    def extract(self, query_request: QueryRequest, add_metadata: bool = False) -> pd.DataFrame:
         raise NotImplementedError("Subclasses must implement extract method")
 
     def _add_metadata(self, data: pd.DataFrame):
@@ -28,14 +28,15 @@ class DatabaseExtractor(BaseExtractor):
         super().__init__(source_config)
         self.connection_string = self.config.get("connection_string", "failed_connection_string")
     
-    def extract(self, query_request: QueryRequest) -> pd.DataFrame:
+    def extract(self, query_request: QueryRequest, add_metadata: bool = False) -> pd.DataFrame:
         engine = create_engine(self.connection_string)
         data: pd.DataFrame = pd.read_sql(  # type: ignore
             query_request.query, 
             engine, 
             params=query_request.params
         )
-        self._add_metadata(data)
+        if add_metadata:
+            self._add_metadata(data)
         return data
 
 

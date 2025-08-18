@@ -39,7 +39,7 @@ class ExtractionStep:
         self.extractor = extractor
 
     def execute(self, query_request: QueryRequest) -> tuple[pd.DataFrame, PipelineContext]:
-        data = self.extractor.extract(query_request)
+        data = self.extractor.extract(query_request, add_metadata=True)
         context = PipelineContext(
             source_name=self.extractor.source_name,
             batch_id=self.extractor.batch_id
