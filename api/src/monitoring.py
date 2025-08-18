@@ -6,11 +6,11 @@ from datetime import datetime
 class BaseMonitor:
     def __init__(self, filename: str) -> None:
         self.log = logging.getLogger(filename)
-        logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+        logging.basicConfig(filename=filename, level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 
 class PipelineMonitor(BaseMonitor):
-    def __init__(self, filename: str = "pipeline") -> None:
+    def __init__(self, filename: str = "/var/log/cronjob_monitor.log") -> None:
         super().__init__(filename)
 
     def log_extraction(self, source: str, batch_id: str, rows: int):
@@ -24,5 +24,5 @@ class PipelineMonitor(BaseMonitor):
 
 
 class CronJobMonitor(BaseMonitor):
-    def __init__(self, filename: str = "cronjob") -> None:
+    def __init__(self, filename: str = "/var/log/cronjob_monitor.log") -> None:
         super().__init__(filename)
