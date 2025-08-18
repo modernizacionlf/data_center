@@ -59,19 +59,22 @@ class StagingLoader(BaseLoader):
             exclude_fields = ['created_at', 'updated_at', 'extracted_at', 'record_hash']
         
         stable_fields = {key: value for key, value in record.items() if key not in exclude_fields}
-        
         record_str = str(sorted(stable_fields.items()))
+        
         return hashlib.md5(record_str.encode()).hexdigest()
+    
+    def drop_duplicates(self, dataframe: DataFrame) -> DataFrame:
+        dataframe_copy = dataframe.drop_duplicates(subset=['record_hash'])
+        return dataframe_copy
 
     def add_record_hashes(self, dataframe: DataFrame, exclude_fields: Optional[List[str]] = None) -> DataFrame:
-        df_copy = dataframe.copy()
-        
-        df_copy['record_hash'] = df_copy.apply(
-            lambda row: self.calculate_record_hash(row.to_dict(), exclude_fields), # type: ignore
-            axis=1
+        dataframe_copy = dataframe.copy()
+        dataframe_copy['record_hash'] = dataframe_copy.apply(
+            lambda row: self.calculate_record_hash(row.to_dict(), exclude_fields), axis=1 # type: ignore
         )
-        
-        return df_copy
+
+        dataframe_copy = self.drop_duplicates(dataframe_copy)
+        return dataframe_copy
 
     def filter_new_records(self, dataframe: DataFrame, table_name: str, schema: str = "staging") -> DataFrame:
         if dataframe.empty:
@@ -95,13 +98,15 @@ class StagingLoader(BaseLoader):
     ) -> int:
         if check_duplicates:
             self.ensure_record_hash_column(table_name, schema)
-        
+
         if 'record_hash' not in dataframe.columns:
             dataframe = self.add_record_hashes(dataframe)
-        
+        else:
+            dataframe = self.drop_duplicates(dataframe)
+
         if check_duplicates:
             filtered_dataframe = self.filter_new_records(dataframe, table_name, schema)
         else:
             filtered_dataframe = dataframe
-        
+
         return super().load_data(filtered_dataframe, table_name, schema)
