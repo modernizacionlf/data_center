@@ -56,7 +56,7 @@ class StagingLoader(BaseLoader):
 
     def calculate_record_hash(self, record: Dict[str, Any], exclude_fields: Optional[List[str]] = None) -> str:
         if exclude_fields is None:
-            exclude_fields = ['created_at', 'updated_at', 'extracted_at', 'record_hash']
+            exclude_fields = ['created_at', 'updated_at', '_batch_id', '_extracted_at', 'record_hash']
         
         stable_fields = {key: value for key, value in record.items() if key not in exclude_fields}
         record_str = str(sorted(stable_fields.items()))
