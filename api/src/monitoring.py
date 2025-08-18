@@ -11,8 +11,8 @@ class BaseMonitor:
         logging.basicConfig(filename=filename, level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 
-class StagingMonitor(BaseMonitor):
-    def __init__(self, filename: str = "/var/log/staging_monitor.log") -> None:
+class LoaderMonitor(BaseMonitor):
+    def __init__(self, filename: str = "/var/log/loader_monitor.log") -> None:
         super().__init__(filename)
 
     def log_new_records(self, dataframe: DataFrame, new_records: DataFrame):
