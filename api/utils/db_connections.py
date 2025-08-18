@@ -61,7 +61,7 @@ class Geonode(DBConnection):
 
     @property
     def queries(self) -> list[QueryRequest]:
-        return [QueryRequest(query="SELECT estado_id, nivel_id, pintura FROM global.rampas")]
+        return [QueryRequest(query="SELECT id, estado_id, nivel_id, pintura FROM global.rampas")]
 
 
 class DataCenter(DBConnection):
