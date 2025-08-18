@@ -16,9 +16,7 @@ class LoadingStep:
         self.schema = schema
 
     def execute(self, data: pd.DataFrame, table_name: str) -> int:
-        if isinstance(self.loader, StagingLoader):
-            return self.loader.load_data(data, table_name, self.schema, check_duplicates=True)
-        return self.loader.load_data(data, table_name, self.schema)
+        return self.loader.load_data(data, table_name, self.schema, check_duplicates=True)
 
 
 class TransformationStep:
