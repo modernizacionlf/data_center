@@ -21,4 +21,4 @@
 # For more information see the manual pages of crontab(5) and cron(8)
 # 
 # m h  dom mon dow   command
-0 6 * * * /usr/local/bin/python3 api/src/job.py >> /var/log/datacenter-job.log 2>&1
+*/1 * * * * export PYTHONPATH=/api:$PYTHONPATH && /bin/bash -c "source /api/.venv/bin/activate && /api/.venv/bin/python3 /api/src/job.py >> /var/log/datacenter-job.log 2>&1"
