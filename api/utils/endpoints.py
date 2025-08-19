@@ -14,6 +14,7 @@ ALLOWED_HOSTS = ["data.lasflores.gob.ar", "data.lasflores.net.ar", "localhost", 
 
 class ENDPOINTS:
     BASE = "/api"
+    HEALTH = f"{BASE}/health"
     ENTITIES = f"{BASE}/entidades"
 
     @classmethod
