@@ -72,13 +72,13 @@ class DataPipeline:
         
         self.monitor.log_extraction(context.source_name, context.batch_id, len(raw_data))
 
-        staging_table = staging_table or f"{extractor.source_name}_raw"
+        staging_table = staging_table or f"{query_request.main_table}_raw"
         loaded_raw = self.staging_step.execute(raw_data, staging_table)
 
         curated_data = self.transform_step.execute(raw_data)
         self.monitor.log_transformations(context.source_name, context.batch_id, len(raw_data), len(curated_data))
 
-        warehouse_table = final_table or f"{extractor.source_name}"
+        warehouse_table = final_table or f"{query_request.main_table}"
         loaded_curated = self.warehouse_step.execute(curated_data, warehouse_table)
 
         return {
