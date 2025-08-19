@@ -6,11 +6,11 @@ from utils.paths import DATA_CENTER_PRODUCTION_PATH
 
 
 ALLOWED_ORIGINS = [
-    "http://data.lasflores.gob.ar:8002",
-    "https://data.lasflores.gob.ar:8002"
+    "http://data.lasflores.net.ar:8002",
+    "https://data.lasflores.net.ar:8002"
 ]
 
-ALLOWED_HOSTS = ["data.lasflores.gob.ar", "localhost", "127.0.0.1"]
+ALLOWED_HOSTS = ["data.lasflores.gob.ar", "data.lasflores.net.ar", "localhost", "127.0.0.1"]
 
 class ENDPOINTS:
     BASE = "/api"
