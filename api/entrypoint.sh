@@ -17,4 +17,4 @@ touch /var/log/datacenter-job.log
 
 # Start FastAPI in foreground
 echo "Starting FastAPI server..."
-exec fastapi dev --host 0.0.0.0 --port 8002 /api/main.py
+exec uvicorn main:api --host 0.0.0.0 --port 8002 --proxy-headers --forwarded-allow-ips="*"
