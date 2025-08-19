@@ -1,29 +1,26 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
-from utils.endpoints import ENDPOINTS, ALLOWED_HOSTS, ALLOWED_ORIGINS
+from utils.endpoints import ENDPOINTS
 from utils.endpoints import get_available_entities, get_available_statistics
 
 
 api = FastAPI(
-    title="Centro de Datos - Las Flores",
-    root_path="/api"
-)
-
-api.add_middleware(
-    TrustedHostMiddleware, 
-    allowed_hosts=ALLOWED_HOSTS
+    title="Centro de Datos - Las Flores"
 )
 
 api.add_middleware(
     CORSMiddleware,
-    allow_origins=ALLOWED_ORIGINS,
+    allow_origins=["*"], 
     allow_credentials=True,
     allow_methods=["GET"],
     allow_headers=["*"],
 )
 
+
+@api.get(ENDPOINTS.HEALTH)
+async def health():
+    return {"status": "running"}
 
 @api.get(ENDPOINTS.ENTITIES)
 async def get_entities():
