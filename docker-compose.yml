@@ -6,6 +6,8 @@ services:
       - "8002:8002"
     depends_on:
       - database
+    networks:
+      - network
     
     develop:
       # create a `watch` configuration to update the api
