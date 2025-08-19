@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 class QueryRequest:
     query: str
     params: Optional[Mapping[str, Any]] = None
+    main_table: Optional[str] = None
 
 
 type SourceConfig = dict[str, str]
@@ -61,7 +62,17 @@ class Geonode(DBConnection):
 
     @property
     def queries(self) -> list[QueryRequest]:
-        return [QueryRequest(query="SELECT id, estado_id, nivel_id, pintura FROM global.rampas")]
+        return [
+            QueryRequest(
+                query="""
+                    SELECT id, estado, nivel, pintura 
+                    FROM global.rampas r
+                    JOIN global.rampas_estados re ON r.estado_id = re.estado_id
+                    JOIN global.rampas_niveles rn ON r.nivel_id = rn.nivel_id
+                """,
+                main_table="rampas"
+            )
+        ]
 
 
 class DataCenter(DBConnection):
