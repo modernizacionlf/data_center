@@ -24,8 +24,9 @@ FROM python:3.12-slim-bookworm
 # Install cron
 RUN apt-get update && \
     apt-get install -y cron && \
+    apt-get install -y curl && \
     apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    rm -rf /var/lib/apt/lists/* 
 
 # copy the api from the builder
 COPY --from=builder --chown=api:api /api /api
@@ -49,6 +50,10 @@ RUN chmod +x /entrypoint.sh
 RUN mkdir -p /var/log && \
     touch /var/log/datacenter-job.log && \
     chmod 666 /var/log/datacenter-job.log
+    
+# health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+  CMD ["curl", "-f", "http://127.0.0.1:8002/api/health"]
 
 # Use entrypoint to start both cron and FastAPI
 CMD ["/entrypoint.sh"]
