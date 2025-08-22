@@ -65,7 +65,7 @@ class Geonode(DBConnection):
         return [
             QueryRequest(
                 query="""
-                    SELECT r.id, r.estado, r.nivel, r.pintura 
+                    SELECT r.id, re.estado, rn.nivel, r.pintura 
                     FROM global.rampas r
                     JOIN global.rampas_estados re ON r.estado_id = re.estado_id
                     JOIN global.rampas_niveles rn ON r.nivel_id = rn.nivel_id
