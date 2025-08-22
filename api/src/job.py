@@ -7,7 +7,7 @@ from src.staging import StagingLoader
 from src.transform import DataTransformer
 from src.warehouse import WarehouseLoader
 from utils.db_connections import DBConnection, DataCenter, Geonode, BaseUnica
-from utils.paths import DATA_CENTER_PRODUCTION_PATH, GEONODE_ENV_PATH
+from utils.paths import BASE_UNICA_ENV_PATH, DATA_CENTER_PRODUCTION_PATH, GEONODE_ENV_PATH
 
 datacenter = DataCenter(DATA_CENTER_PRODUCTION_PATH)
 
