@@ -127,6 +127,7 @@ class BaseUnica(DBConnection):
             QueryRequest(
                 query="""
                     SELECT 
+                        i.id,
                         i.falta, 
                         a.tipo_vehiculo, 
                         COALESCE(a.retiene_licencia, false) AS retiene_licencia, 
