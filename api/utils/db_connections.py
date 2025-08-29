@@ -126,8 +126,20 @@ class BaseUnica(DBConnection):
             ),
             QueryRequest(
                 query="""
-                    SELECT i.falta, a.tipo_vehiculo, COALESCE(a.retiene_licencia, false) AS retiene_licencia, COALESCE(a.retiene_vehiculo, false) AS retiene_vehiculo
-                    FROM actas a INNER JOIN imputaciones i ON a.id = i.id_acta
+                    SELECT 
+                        i.falta, 
+                        a.tipo_vehiculo, 
+                        COALESCE(a.retiene_licencia, false) AS retiene_licencia, 
+                        COALESCE(a.retiene_vehiculo, false) AS retiene_vehiculo
+                    FROM actas a 
+                    INNER JOIN imputaciones i ON a.id = i.id_acta
+                    WHERE i.falta IN (
+                        SELECT i.falta
+                        FROM imputaciones i
+                        GROUP BY i.falta
+                        ORDER BY COUNT(*) DESC
+                        LIMIT 6
+                    );
                 """,
                 main_table="infracciones"
             )
