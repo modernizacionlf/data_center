@@ -7,7 +7,7 @@ from src.staging import StagingLoader
 from src.transform import DataTransformer
 from src.warehouse import WarehouseLoader
 from utils.db_connections import DBConnection, DataCenter, Geonode, BaseUnica
-from utils.paths import BASE_UNICA_ENV_PATH, DATA_CENTER_PRODUCTION_PATH, GEONODE_ENV_PATH
+from utils.paths import DATA_CENTER_PRODUCTION_PATH
 
 datacenter = DataCenter(DATA_CENTER_PRODUCTION_PATH)
 
@@ -40,9 +40,10 @@ if __name__ == "__main__":
     monitor = CronJobMonitor()
     monitor.log.info("Inicio de ejecucion del job")
     try:
-        geonode = Geonode(GEONODE_ENV_PATH)
-        base_unica = BaseUnica(BASE_UNICA_ENV_PATH)
-        dbconnections = [geonode, base_unica]
+        geonode = Geonode()
+        base_unica = BaseUnica()
+        
+        dbconnections: Sequence[DBConnection] = [geonode, base_unica]
         DatabaseJob(dbconnections).run()
         monitor.log.info("Ejecución finalizada correctamente")
     except Exception as error:

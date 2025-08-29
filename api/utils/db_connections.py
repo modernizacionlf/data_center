@@ -1,10 +1,11 @@
 import os
-
 from pathlib import Path
 from dataclasses import dataclass
 from typing import Any, Mapping, Optional
 
 from dotenv import load_dotenv
+
+from utils.paths import BASE_UNICA_ENV_PATH, GEONODE_ENV_PATH
 
 
 @dataclass
@@ -27,12 +28,18 @@ class DBConnection:
         port_key: str,
         db_key: str,
     ) -> None:
-        load_dotenv(env_path)
+        print(f"Loading env file: {env_path}")
+        print(f"File exists: {env_path.exists()}")
+        
+        load_dotenv(env_path, override=True)
+        
         self.user = os.getenv(user_key, "")
         self.password = os.getenv(password_key, "")
         self.host = os.getenv(host_key, "")
         self.port = os.getenv(port_key, "")
         self.db = os.getenv(db_key, "")
+        
+        print(f"Loaded values - User: {self.user}, Host: {self.host}, DB: {self.db}")
 
     @property
     def connection_string(self) -> str:
@@ -51,7 +58,7 @@ class DBConnection:
 class Geonode(DBConnection):
     def __init__(
         self,
-        env_path: Path,
+        env_path: Path = GEONODE_ENV_PATH,
         user_key: str = "DB_USER",
         password_key: str = "DB_PASSWORD",
         host_key: str = "DB_HOST",
@@ -78,7 +85,7 @@ class Geonode(DBConnection):
 class BaseUnica(DBConnection):
     def __init__(
         self,
-        env_path: Path,
+        env_path: Path = BASE_UNICA_ENV_PATH,
         user_key: str = "DB_USER",
         password_key: str = "DB_PASSWORD",
         host_key: str = "DB_HOST",
