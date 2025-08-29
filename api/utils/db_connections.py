@@ -99,9 +99,28 @@ class BaseUnica(DBConnection):
         return [
             QueryRequest(
                 query="""
-                    SELECT cm.sexo, cm.edad, cm.obra_social FROM consultas_medicas cm
-                    WHERE cm.obra_social NOT IN ('ASOCIACION MUTUAL FARMACEUTICOS FLORENTINO AMEGHINO', 'ASOCIACION MUTUALISTA DE EMPLEADOS DEL BANCO PROVINCIA DE BUENOS AIRES', 'PROGRAMA INCLUIR SALUD', 'PROGRAMA SUMAR', 'PROGRAMA FEDERAL DE SALUD')
-                    AND cm.edad > 0 AND cm.edad < 103
+                    WITH primera_consulta AS (
+                        SELECT *,
+                            ROW_NUMBER() OVER (PARTITION BY paciente ORDER BY id) AS rn
+                        FROM consultas_medicas
+                        WHERE edad > 0 
+                        AND edad < 103 
+                        AND obra_social IS NOT NULL
+                    )
+                    SELECT 
+                        id,
+                        sexo,
+                        edad,
+                        CASE
+                            WHEN obra_social NOT IN (
+                                'PROGRAMA INCLUIR SALUD',
+                                'PROGRAMA SUMAR',
+                                'PROGRAMA FEDERAL DE SALUD'
+                            ) THEN 'si'
+                            ELSE 'no'
+                        END AS tiene_obra_social
+                    FROM primera_consulta
+                    WHERE rn = 1;
                 """,
                 main_table="centros_de_atencion_primaria"
             ),
