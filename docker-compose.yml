@@ -30,7 +30,7 @@ services:
       - postgres_db:/var/lib/postgresql/data
       - ./sql:/docker-entrypoint-initdb.d:ro
     env_file:
-      - ./api/.env.development
+      - ./api/.env.production
     networks:
       - network
     
