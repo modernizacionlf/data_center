@@ -72,7 +72,7 @@ class Geonode(DBConnection):
         return [
             QueryRequest(
                 query="""
-                    SELECT r.id, re.estado, rn.nivel, r.pintura 
+                    SELECT r.id, re.estado, rn.nivel AS borde, r.pintura 
                     FROM global.rampas r
                     JOIN global.rampas_estados re ON r.estado_id = re.estado_id
                     JOIN global.rampas_niveles rn ON r.nivel_id = rn.nivel_id
@@ -109,7 +109,6 @@ class BaseUnica(DBConnection):
                     )
                     SELECT 
                         id,
-                        sexo,
                         edad,
                         CASE
                             WHEN obra_social NOT IN (
@@ -118,7 +117,11 @@ class BaseUnica(DBConnection):
                                 'PROGRAMA FEDERAL DE SALUD'
                             ) THEN 'si'
                             ELSE 'no'
-                        END AS tiene_obra_social
+                        END AS tiene_obra_social,
+                        CASE
+                            WHEN sexo = 'M' THEN 'Masculino'
+                            ELSE 'Femenino'
+                        END AS sexo
                     FROM primera_consulta
                     WHERE rn = 1;
                 """,
@@ -128,7 +131,7 @@ class BaseUnica(DBConnection):
                 query="""
                     SELECT 
                         i.id,
-                        i.falta, 
+                        i.falta AS tipo_infraccion, 
                         a.tipo_vehiculo, 
                         COALESCE(a.retiene_licencia, false) AS retiene_licencia, 
                         COALESCE(a.retiene_vehiculo, false) AS retiene_vehiculo
