@@ -55,7 +55,7 @@ def get_available_statistics(entity_name: str) -> dict[str, list[dict[str, Any]]
     available_columns = entity_dataframe.columns.tolist()
 
     for column in available_columns:
-        if entity_dataframe[column].dtype in ["object", "bool"]:
+        if entity_dataframe[column].dtype in ["object", "bool"] or (entity_dataframe[column].dtype in ["int64"] and column not in ["id"]):
             grouped_df = entity_dataframe.groupby(column).size().reset_index(name="cantidad") # type: ignore
             grouped_df = grouped_df.rename(columns={column: "valor"})
             stats[column] = grouped_df.to_dict('records') # type: ignore
