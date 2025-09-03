@@ -137,13 +137,6 @@ class BaseUnica(DBConnection):
                         COALESCE(a.retiene_vehiculo, false) AS retiene_vehiculo
                     FROM actas a 
                     INNER JOIN imputaciones i ON a.id = i.id_acta
-                    WHERE i.falta IN (
-                        SELECT i.falta
-                        FROM imputaciones i
-                        GROUP BY i.falta
-                        ORDER BY COUNT(*) DESC
-                        LIMIT 6
-                    );
                 """,
                 main_table="infracciones"
             )
