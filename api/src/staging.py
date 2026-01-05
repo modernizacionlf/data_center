@@ -1,6 +1,6 @@
 from pandas import DataFrame
 
-from src.loader import BaseLoader
+from .loader import BaseLoader
 
 
 class StagingLoader(BaseLoader):

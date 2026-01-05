@@ -1,13 +1,13 @@
 from typing import Sequence
 
-from src.extractor import DatabaseExtractor
-from src.monitoring import CronJobMonitor
-from src.pipeline import DataPipeline
-from src.staging import StagingLoader
-from src.transform import DataTransformer
-from src.warehouse import WarehouseLoader
-from utils.db_connections import DBConnection, DataCenter, Geonode, BaseUnica
-from utils.paths import DATA_CENTER_PRODUCTION_PATH
+from .extractor import DatabaseExtractor, FileExtractor
+from .monitoring import CronJobMonitor
+from .pipeline import DataPipeline
+from .staging import StagingLoader
+from .transform import DataTransformer
+from .warehouse import WarehouseLoader
+from utils import DBConnection, DataCenter, Geonode, BaseUnica, QueryRequest
+from utils import DATA_CENTER_PRODUCTION_PATH
 
 datacenter = DataCenter(DATA_CENTER_PRODUCTION_PATH)
 
@@ -35,6 +35,40 @@ class DatabaseJob():
                     query_request
                 )
 
+class FileJob():
+    def __init__(self, filenames: Sequence[str], base_path: str = "files") -> None:
+        self.filenames = filenames
+        self.base_path = base_path
+
+    def run(self):
+        for filename in self.filenames:
+            staging_loader = StagingLoader(datacenter.connection_string)
+            warehouse_loader = WarehouseLoader(datacenter.connection_string)
+            transformer = DataTransformer()
+
+            pipeline = DataPipeline(
+                staging_loader,
+                warehouse_loader,
+                transformer
+            )
+
+            file_config = {
+                "name": f"file_{filename.replace('.json', '')}",
+                "base_path": self.base_path
+            }
+            extractor = FileExtractor(file_config)
+
+            query_request = QueryRequest(
+                query=filename,
+                main_table=filename.replace('.json', ''),
+                params=None
+            )
+
+            pipeline.run(
+                extractor,
+                query_request
+            )
+
 
 if __name__ == "__main__":
     monitor = CronJobMonitor()
@@ -45,6 +79,10 @@ if __name__ == "__main__":
         
         dbconnections: Sequence[DBConnection] = [geonode, base_unica]
         DatabaseJob(dbconnections).run()
+
+        file_list = ["surtidores.json"]
+        FileJob(file_list, base_path="files").run()
+
         monitor.log.info("Ejecución finalizada correctamente")
     except Exception as error:
         monitor.log.error(f"Error en la ejecución: {error}")

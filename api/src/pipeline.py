@@ -2,12 +2,12 @@ from typing import Any, Dict, Optional, Union
 
 import pandas as pd
 
-from src.extractor import BaseExtractor
-from src.staging import StagingLoader
-from src.transform import DataTransformer
-from src.monitoring import PipelineMonitor
-from src.warehouse import WarehouseLoader
-from utils.db_connections import QueryRequest
+from .extractor import BaseExtractor
+from .staging import StagingLoader
+from .transform import DataTransformer
+from .monitoring import PipelineMonitor
+from .warehouse import WarehouseLoader
+from utils import QueryRequest
 
 
 class LoadingStep:

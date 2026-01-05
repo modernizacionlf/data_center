@@ -5,7 +5,7 @@ from typing import Set, List, Dict, Any, Optional
 from pandas import DataFrame
 from sqlalchemy import create_engine, text, inspect
 
-from src.monitoring import LoaderMonitor
+from .monitoring import LoaderMonitor
 
 
 class BaseLoader:

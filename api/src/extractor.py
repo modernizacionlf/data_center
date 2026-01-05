@@ -1,9 +1,10 @@
 from datetime import datetime
+from pathlib import Path
 
 import pandas as pd
 
 from sqlalchemy import create_engine
-from utils.db_connections import QueryRequest
+from utils import QueryRequest
 
 
 
@@ -45,4 +46,14 @@ class APIExtractor(BaseExtractor):
 
 
 class FileExtractor(BaseExtractor):
-    pass
+    def __init__(self, source_config: dict[str, str]) -> None:
+        super().__init__(source_config)
+        self.base_path = Path(source_config.get("base_path", "files"))
+
+    def extract(self, query_request: QueryRequest, add_metadata: bool = False) -> pd.DataFrame:
+        filename = query_request.query
+        file_path = self.base_path / filename
+        data: pd.DataFrame = pd.read_json(file_path)
+        if add_metadata:
+            self._add_metadata(data)
+        return data
