@@ -51,8 +51,6 @@ RUN mkdir -p /var/log && \
     touch /var/log/datacenter-job.log && \
     chmod 666 /var/log/datacenter-job.log
 
-RUN mkdir -p /api/files
-
 # health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
   CMD ["curl", "-f", "http://127.0.0.1:8002/api/health"]
