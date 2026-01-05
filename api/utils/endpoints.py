@@ -1,6 +1,5 @@
 from typing import Any
 
-from src import DatabaseExtractor
 from .db_connections import DataCenter, QueryRequest
 from .paths import DATA_CENTER_PRODUCTION_PATH
 
@@ -26,10 +25,13 @@ class ENDPOINTS:
         return f"{cls.ENTITIES}/{entity_name}/estadisticas"
 
 
-datacenter = DataCenter(DATA_CENTER_PRODUCTION_PATH)
-extractor = DatabaseExtractor(datacenter.source_config)
 
 def get_available_entities() -> list[str]:
+    from src import DatabaseExtractor
+
+    datacenter = DataCenter(DATA_CENTER_PRODUCTION_PATH)
+    extractor = DatabaseExtractor(datacenter.source_config)
+
     query_request = QueryRequest(
         query="""
             SELECT table_name
@@ -44,6 +46,11 @@ def get_available_entities() -> list[str]:
     return entities
 
 def get_available_statistics(entity_name: str) -> dict[str, list[dict[str, Any]]]:
+    from src import DatabaseExtractor
+
+    datacenter = DataCenter(DATA_CENTER_PRODUCTION_PATH)
+    extractor = DatabaseExtractor(datacenter.source_config)
+
     stats: dict[str, list[dict[str, Any]]] = {}
     excluded_columns = ["_source", "_batch_id", "_extracted_at", "record_hash"]
     query_request = QueryRequest(
