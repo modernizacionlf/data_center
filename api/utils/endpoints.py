@@ -1,7 +1,7 @@
 from typing import Any
 
-from src import DatabaseExtractor, QueryRequest
-from .db_connections import DataCenter
+from src import DatabaseExtractor
+from .db_connections import DataCenter, QueryRequest
 from .paths import DATA_CENTER_PRODUCTION_PATH
 
 
