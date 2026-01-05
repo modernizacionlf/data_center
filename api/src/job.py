@@ -7,7 +7,7 @@ from .staging import StagingLoader
 from .transform import DataTransformer
 from .warehouse import WarehouseLoader
 from utils import DBConnection, DataCenter, Geonode, BaseUnica, QueryRequest
-from utils import DATA_CENTER_PRODUCTION_PATH
+from utils import DATA_CENTER_PRODUCTION_PATH, FILES_PATH
 
 datacenter = DataCenter(DATA_CENTER_PRODUCTION_PATH)
 
@@ -81,7 +81,7 @@ if __name__ == "__main__":
         DatabaseJob(dbconnections).run()
 
         file_list = ["surtidores.json"]
-        FileJob(file_list, base_path="files").run()
+        FileJob(file_list, base_path=FILES_PATH).run()
 
         monitor.log.info("Ejecución finalizada correctamente")
     except Exception as error:
