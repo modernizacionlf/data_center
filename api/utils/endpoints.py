@@ -1,8 +1,8 @@
 from typing import Any
 
-from src.extractor import DatabaseExtractor, QueryRequest
-from utils.db_connections import DataCenter
-from utils.paths import DATA_CENTER_PRODUCTION_PATH
+from src import DatabaseExtractor, QueryRequest
+from .db_connections import DataCenter
+from .paths import DATA_CENTER_PRODUCTION_PATH
 
 
 ALLOWED_ORIGINS = [

@@ -5,7 +5,7 @@ from typing import Any, Mapping, Optional
 
 from dotenv import load_dotenv
 
-from utils.paths import BASE_UNICA_ENV_PATH, GEONODE_ENV_PATH
+from .paths import BASE_UNICA_ENV_PATH, GEONODE_ENV_PATH
 
 
 @dataclass
