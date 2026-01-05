@@ -8,6 +8,9 @@ services:
       - database
     networks:
       - network
+
+    volumes:
+      - ./api/files:/api/files
     
     develop:
       # create a `watch` configuration to update the api
