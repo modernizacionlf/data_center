@@ -1,6 +1,7 @@
 from .paths import BASE_UNICA_ENV_PATH, DATA_CENTER_PRODUCTION_PATH, GEONODE_ENV_PATH
 from .db_connections import DBConnection, DataCenter, Geonode, BaseUnica, QueryRequest
-from .rootpath import get_project_root_path, FILES_PATH
+from .rootpath import get_project_root_path
+from .paths import FILES_PATH
 from .endpoints import ENDPOINTS, get_available_entities, get_available_statistics
 
 __all__ = [
