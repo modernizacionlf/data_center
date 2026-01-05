@@ -1,8 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from utils.endpoints import ENDPOINTS
-from utils.endpoints import get_available_entities, get_available_statistics
+from utils import ENDPOINTS, get_available_entities, get_available_statistics
 
 
 api = FastAPI(
