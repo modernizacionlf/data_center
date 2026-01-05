@@ -11,6 +11,12 @@ ALLOWED_ORIGINS = [
 
 ALLOWED_HOSTS = ["data.lasflores.gob.ar", "data.lasflores.net.ar", "localhost", "127.0.0.1"]
 
+RAW_DATA_ENTITIES = [
+    "surtidores"
+]
+
+METADATA_COLUMNS = ["_source", "_batch_id", "_extracted_at", "record_hash"]
+
 class ENDPOINTS:
     BASE = "/api"
     HEALTH = f"{BASE}/health"
@@ -51,14 +57,19 @@ def get_available_statistics(entity_name: str) -> dict[str, list[dict[str, Any]]
     datacenter = DataCenter(DATA_CENTER_PRODUCTION_PATH)
     extractor = DatabaseExtractor(datacenter.source_config)
 
-    stats: dict[str, list[dict[str, Any]]] = {}
-    excluded_columns = ["_source", "_batch_id", "_extracted_at", "record_hash"]
     query_request = QueryRequest(
         query=f'SELECT * from warehouse."{entity_name}"',
         params={"table": entity_name}
     )
     entity_dataframe = extractor.extract(query_request)
-    entity_dataframe = entity_dataframe.drop(columns=excluded_columns, errors="ignore")
+    entity_dataframe = entity_dataframe.drop(columns=METADATA_COLUMNS, errors="ignore")
+
+    if entity_name in RAW_DATA_ENTITIES:
+        return {
+            "data": entity_dataframe.to_dict('records')
+        }
+
+    stats: dict[str, list[dict[str, Any]]] = {}
     available_columns = entity_dataframe.columns.tolist()
 
     for column in available_columns:
